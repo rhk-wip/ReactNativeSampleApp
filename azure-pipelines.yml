@@ -10,17 +10,21 @@ pool:
   vmImage: 'macOS 10.13'
 
 steps:
-- task: NodeTool@0
+- task: Gradle@2
   inputs:
-    versionSpec: '9.7.1'
-  displayName: 'Install Node'
+    workingDirectory: ''
+    gradleWrapperFile: 'gradlew'
+    publishJUnitResults: false
+    tasks: 'assembleDebug'
 
-- script: npm install
-  displayName: 'Install dependencies'
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.apk'
+    targetFolder: '$(build.artifactStagingDirectory)'
 
-- script: npm run lint
-  displayName: 'Run lint'
-
-- script: npm run test
-  displayName: 'Run unit tests'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(build.artifactStagingDirectory)/app/build/outputs/'
+    artifactName: 'apk-files'
+    artifactType: 'container'
 
