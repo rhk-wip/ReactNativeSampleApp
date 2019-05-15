@@ -6,25 +6,15 @@
 trigger:
 - master
 
+
 pool:
   vmImage: 'macOS 10.13'
-
 steps:
-- task: Gradle@2
+- task: NodeTool@0
   inputs:
-    workingDirectory: ''
-    gradleWrapperFile: 'gradlew'
-    publishJUnitResults: false
-    tasks: 'assembleDebug'
+    versionSpec: '9.7.1'
+  displayName: 'Install Node'
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**/*.apk'
-    targetFolder: '$(build.artifactStagingDirectory)'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(build.artifactStagingDirectory)/app/build/outputs/'
-    artifactName: 'apk-files'
-    artifactType: 'container'
-
+- script: npm install
+  displayName: 'Install dependencies'
+  
