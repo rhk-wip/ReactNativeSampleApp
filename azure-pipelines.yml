@@ -1,0 +1,65 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+name: $(BuildID)_$(Date:yyyyMMdd)$(Rev:.r)
+
+pr:
+  branches:
+    include:
+      - master
+      - releases/*
+  paths:
+    exclude:
+    - /*.md
+    - /**/*.md
+trigger:
+  - master
+  - releases/*
+jobs:
+  - job: Testing
+    pool:
+      name: Hosted macOS
+    steps:
+      - task: NodeTool@0
+        displayName: 'Use Node 10.x'
+        inputs:
+          versionSpec: 10.x
+
+      - bash: |
+          yarn reset
+          yarn
+          yarn lerna bootstrap --no-hoist
+        displayName: 'Install Dependencies'
+
+      - bash: 'yarn lint'
+        displayName: Lint Files
+
+      - bash: |
+          yarn test:coverage --ci
+        failOnStderr: true
+        displayName: Analyze Test Coverage
+        continueOnError: true
+
+      - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@1
+        displayName: ReportGenerator
+        inputs:
+          reports: 'reports/all/coverage/cobertura-coverage.xml'
+          targetdir: CoverageReports
+
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results'
+        inputs:
+          testResultsFiles: reports/all/junit.xml
+          failTaskOnFailedTests: true
+        condition: succeededOrFailed()
+
+      - task: PublishCodeCoverageResults@1
+        displayName: Publish Code Coverage Results
+        inputs:
+          codeCoverageTool: cobertura
+          summaryFileLocation: $(Build.SourcesDirectory)/CoverageReports/Cobertura.xml
+          reportDirectory: $(Build.SourcesDirectory)/CoverageReports
+        condition: succeededOrFailed()
+
