@@ -30,6 +30,7 @@ jobs:
       - bash: |
           yarn reset
           yarn add lerna
+          yarn lerna init
           yarn lerna bootstrap --no-hoist
         displayName: 'Install Dependencies'
 
