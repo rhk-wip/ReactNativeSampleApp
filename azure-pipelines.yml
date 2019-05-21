@@ -43,13 +43,7 @@ jobs:
         continueOnError: true
 
 
-      - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@1
-        displayName: ReportGenerator
-        inputs:
-          reports: 'reports/all/coverage/cobertura-coverage.xml'
-          targetdir: CoverageReports
-
-          
+        
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
