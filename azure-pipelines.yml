@@ -34,7 +34,8 @@ jobs:
           yarn lerna bootstrap --no-hoist
         displayName: 'Install Dependencies'
 
-
+      - bash: 'yarn lint'
+        displayName: Lint Files
 
       - bash: |
           yarn test:coverage --ci
@@ -42,8 +43,12 @@ jobs:
         displayName: Analyze Test Coverage
         continueOnError: true
 
+      - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@1
+        displayName: ReportGenerator
+        inputs:
+          reports: 'reports/all/coverage/cobertura-coverage.xml'
+          targetdir: CoverageReports
 
-        
       - task: PublishTestResults@2
         displayName: 'Publish Test Results'
         inputs:
