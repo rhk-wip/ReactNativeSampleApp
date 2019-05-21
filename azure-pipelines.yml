@@ -34,7 +34,7 @@ jobs:
           yarn lerna bootstrap --no-hoist
         displayName: 'Install Dependencies'
 
-      - bash: 'yarn lint'
+      - bash: 'yarn run lint'
         displayName: Lint Files
 
       - bash: |
